@@ -1,0 +1,147 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API Cierre Incidencia SM - Salesforce",
+    "description": "Web Service REST para cerrar incidencias en Salesforce a partir del identificador de incidencia y un mensaje de solución.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://erantzunak--uat.sandbox.my.salesforce.com/services/apexrest"
+    }
+  ],
+  "paths": {
+    "/incidenciaSM": {
+      "post": {
+        "summary": "Cerrar incidencia",
+        "description": "Cierra una incidencia en Salesforce cambiando su estado a Closed e informando el mensaje de solución.",
+        "operationId": "cierreIncidencia",
+        "security": [
+          {
+            "OAuth2Salesforce": [
+              "api"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CierreIncidenciaRequest"
+              },
+              "example": {
+                "request": {
+                  "incidenciaID": "IM1021964",
+                  "mensajeSolucion": "La incidencia no podido ser solucionada"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Respuesta correcta del servicio",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CierreIncidenciaResponse"
+                },
+                "example": {
+                  "resultado": "OK",
+                  "error": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación de la petición",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CierreIncidenciaResponse"
+                },
+                "example": {
+                  "resultado": null,
+                  "error": "Petición inválida: el ID de incidencia es requerido."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CierreIncidenciaResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "OAuth2Salesforce": {
+        "type": "oauth2",
+        "description": "OAuth 2.0 Authorization Code Flow con Salesforce",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://login.salesforce.com/services/oauth2/authorize",
+            "tokenUrl": "https://login.salesforce.com/services/oauth2/token",
+            "scopes": {
+              "api": "Acceso a la API de Salesforce"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "CierreIncidenciaRequest": {
+        "type": "object",
+        "required": [
+          "request"
+        ],
+        "properties": {
+          "request": {
+            "type": "object",
+            "required": [
+              "incidenciaID"
+            ],
+            "properties": {
+              "incidenciaID": {
+                "type": "string",
+                "description": "Identificador de la incidencia en Salesforce",
+                "example": "IM1021964"
+              },
+              "mensajeSolucion": {
+                "type": "string",
+                "description": "Mensaje descriptivo de la solución aplicada a la incidencia",
+                "example": "La incidencia no podido ser solucionada"
+              }
+            }
+          }
+        }
+      },
+      "CierreIncidenciaResponse": {
+        "type": "object",
+        "properties": {
+          "resultado": {
+            "type": "string",
+            "nullable": true,
+            "description": "Resultado de la operación: \"OK\" si se ha cerrado correctamente",
+            "example": "OK"
+          },
+          "error": {
+            "type": "string",
+            "nullable": true,
+            "description": "Mensaje de error funcional o técnico",
+            "example": null
+          }
+        }
+      }
+    }
+  }
+}
